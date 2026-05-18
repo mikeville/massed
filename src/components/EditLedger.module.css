@@ -1,0 +1,222 @@
+/* EditLedger — composition styles: zone separators, header row, preview
+   wrapper, action buttons. Row internals live in SetRow.module.css. */
+
+.ledger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  padding: var(--s-5) 0 0;
+}
+
+/* Date row — sits above the column header. The "for" prefix and the
+   native date input read as one phrase: "for [thu · may 14]". The info
+   icon sits on the right edge as a quiet affordance; tapping it opens
+   a single-line tooltip explaining the one-date-per-save rule. */
+.date-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.date-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+
+.date-label-prefix {
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  color: var(--c-muted);
+}
+
+/* Native date input, de-chromed. Keeps the platform picker behavior
+   (calendar popover, keyboard nudging) while presenting as a plain
+   mono-styled value on the page. */
+.date-input {
+  font: inherit;
+  color: var(--c-ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--c-rule);
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.date-input:focus {
+  outline: none;
+  border-bottom-color: var(--c-ink);
+}
+
+/* The picker indicator is the only chrome we keep; muting it so the
+   value text is the primary read. Safari shows nothing here, which is
+   fine — the whole field is the click target via the wrapping label. */
+.date-input::-webkit-calendar-picker-indicator {
+  opacity: 0.4;
+  cursor: pointer;
+}
+
+.date-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.date-hint {
+  position: relative;
+}
+
+/* ⓘ button — a 16px target that reads as a glyph at rest. No border,
+   no fill; the icon character carries the affordance. */
+.date-info-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+
+.date-info-btn:hover,
+.date-info-btn[aria-expanded="true"] {
+  color: var(--c-ink);
+}
+
+/* Tooltip pops from the right edge so it doesn't push the input column
+   around when it opens. Paper bg + ink border + soft shadow matches
+   the dropdown shape used by FamilyChip and the period menu. */
+.date-tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  width: max-content;
+  max-width: 240px;
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  background: var(--c-paper);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  box-shadow: 0 4px 12px oklch(0 0 0 / 0.08);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--c-ink);
+  z-index: 2;
+}
+
+/* Column header row — mirrors SetRow's grid so labels sit directly
+   above the data they describe. Mono caps, muted, ink rule below. */
+.header-row {
+  display: grid;
+  grid-template-columns: 38% 18% 22% 22%;
+  grid-template-areas: "exercise family repswt end";
+  column-gap: var(--s-2);
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--c-ink);
+}
+
+.header-cell {
+  font-family: var(--ff-mono);
+  font-weight: 400;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--c-muted);
+  text-align: left;
+}
+
+.header-exercise { grid-area: exercise; }
+.header-family   { grid-area: family; }
+.header-reps-wt  { grid-area: repswt; }
+.header-end      { grid-area: end; }
+.header-x        { color: var(--c-muted); }
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zone-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--c-muted);
+  margin: 0;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The bar preview tracks the form below. The thin top rule only
+   appears when a viz is actually rendered (matches the prior manual
+   mode's :has-svg trick). */
+.preview {
+  width: 100%;
+}
+
+.preview:has(svg) {
+  margin-top: var(--s-2);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-rule);
+}
+
+.error {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--c-ink);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: var(--s-3);
+  margin-top: var(--s-2);
+}
+
+.primary,
+.secondary {
+  flex: 1;
+  padding: 14px 0;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--c-ink);
+  color: var(--c-paper);
+}
+
+.primary:disabled {
+  background: transparent;
+  color: var(--c-muted);
+  border-color: var(--c-rule);
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: transparent;
+  color: var(--c-ink);
+}
+
+@media (max-width: 560px) {
+  /* Header row hides on mobile — SetRow's mobile reflow doesn't
+     align with the desktop column grid (exercise + chip + end on
+     line 1; reps×wt on line 2), so labels would mislead. */
+  .header-row { display: none; }
+  .actions { flex-direction: column-reverse; }
+}

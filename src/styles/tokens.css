@@ -1,0 +1,48 @@
+/* Design tokens — change here, change everywhere.
+   Mirrors the values used in the HTML prototypes. */
+
+:root {
+  /* Color — four-token palette.
+     Ink and muted carry text. Paper is the warm pink page bg (also the
+     "selected" surface). Rule is the single warm tan that does double
+     duty as hairline + recessed-surface fill (inputs, viz seams).
+     Rule is authored in OKLCH so its lightness reads predictably
+     against paper — a near-grey warm tone at L=0.9, C=0.02, hue 30. */
+  --c-paper: #faecec;
+  --c-ink: #14130f;
+  --c-muted: #6e6a60;
+  --c-rule: oklch(0.92 0.02 38.7);
+
+  /* Type families */
+  --ff-display: "Fraunces", Georgia, serif;
+  --ff-headline: "Bricolage Grotesque", Inter, system-ui, sans-serif;
+  --ff-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --ff-body: "IBM Plex Sans", system-ui, sans-serif;
+
+  /* Spacing — 4px base */
+  --s-0: 0px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+
+  /* Radius */
+  --r-2: 2px;
+  --r-3: 3px;
+  --r-4: 4px;
+
+  /* Viz constants — kept in CSS for style debugging,
+     also exported from src/lib/viz/constants.ts for the SVG renderer. */
+  --viz-rep-h: 14px;
+  --viz-radius: 4px;
+  --viz-stroke: 1px;
+  --viz-seam-w: 0.7px;
+  --viz-seam-inset: 1.5px;
+  --viz-side-inset: 1.5px;
+  --viz-highlight-offset: 0.7px;
+}

@@ -1,0 +1,214 @@
+/* SetRow — the shared row atom. Owns column geometry, typography,
+   and the mobile reflow. SetTable wraps these rows in date-grouped
+   sections; EditLedger stacks them in saved/draft zones.
+
+   Type system (one font per role):
+     - Exercise:        body sans 14px
+     - Family text:     body sans 13px, muted
+     - Reps × weight:   mono 13px, tabular nums
+     - Total:           mono 14px, ink
+
+   Numbers right- and left-align via a 3-track inner grid (reps, ×, wt)
+   so reps stack neatly under each other across rows. */
+
+.row {
+  display: grid;
+  /* minmax(0, ...) lets the exercise cell respect its column boundary and
+     ellipsize / scroll instead of pushing into the family column. */
+  grid-template-columns: minmax(0, 38%) minmax(0, 18%) minmax(0, 22%) minmax(0, 22%);
+  grid-template-areas: "exercise family repswt end";
+  align-items: center;
+  column-gap: var(--s-2);
+  padding: var(--s-3) 0;
+  font-family: var(--ff-body);
+  color: var(--c-ink);
+}
+
+/* Static rows in the saved zone of EditLedger get a subtler ink so they
+   read as context rather than active content. SetTable rows use the
+   default tone (full ink). */
+.row-saved { color: var(--c-muted); }
+.row-saved .total-text,
+.row-saved .reps-x-wt { color: var(--c-muted); }
+
+/* Hairline between consecutive rows; the wrapper (SetTable tbody / the
+   EditLedger zones) owns the section-level rules above/below. */
+.row + .row { border-top: 1px solid var(--c-rule); }
+
+.cell-exercise {
+  grid-area: exercise;
+  font-family: var(--ff-body);
+  font-weight: 400;
+  font-size: 14px;
+  min-width: 0;
+  /* Read-only exercise text ellipsizes if it exceeds the cell. Edit-mode
+     inputs scroll horizontally naturally because they own their own
+     overflow behavior. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-family {
+  grid-area: family;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.family-text {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  color: var(--c-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-reps-wt {
+  grid-area: repswt;
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.cell-end {
+  grid-area: end;
+  font-family: var(--ff-mono);
+  font-size: 14px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  /* Fade the total out when the enclosing swipe-row reveals its
+     action layer — keeps the trash glyph from visually colliding
+     with the lb number on hover/focus/open. The variable is owned
+     by SwipeableSetRow's shell and inherits; in any other context
+     (EditLedger's saved zone, plain read-only tables) it falls back
+     to the default 0 and the total stays fully visible. */
+  opacity: calc(1 - var(--actions-visible, 0));
+  transition: opacity 140ms ease-out;
+}
+
+.total-text { color: var(--c-ink); font-weight: 500; }
+
+/* Reps × wt — static variant uses a 3-track grid so reps and weight
+   columns align across rows. Matches SetTable's prior treatment. */
+.reps-x-wt {
+  display: inline-grid;
+  grid-template-columns: 1.6em auto 2.6em;
+  column-gap: 8px;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+}
+
+.reps-col { text-align: right; }
+.wt-col { text-align: left; }
+.x-mark { color: var(--c-muted); }
+
+/* Edit variant uses the same 3-track grid but with inputs filling each
+   numeric track. Inputs read as "fat" recessed cells — a subtle rule
+   fill replaces the line-underline used in static contexts, so the
+   input chrome doesn't compete with the row separator below. */
+.reps-x-wt-edit {
+  display: inline-grid;
+  grid-template-columns: 3.4em auto 4.4em;
+  column-gap: 6px;
+  align-items: center;
+}
+
+/* Shared input chrome — number inputs, exercise typeahead, and the voice
+   transcript all wear the same recessed surface so the field family
+   reads as one component, not three. Font/padding still vary per role;
+   only the bg + border + focus behavior unifies. */
+.number-input,
+.exercise-input {
+  color: var(--c-ink);
+  background: var(--c-rule);
+  border: 1px solid transparent;
+  border-radius: var(--r-2);
+  outline: none;
+  width: 100%;
+  transition: border-color 80ms ease, background-color 80ms ease;
+}
+
+.number-input {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  /* Tighter horizontal padding than the exercise input — rep/weight
+     columns are narrow (3.4em / 4.4em) and 10px would crowd the digits. */
+  padding: 8px 6px;
+  text-align: left;
+  -moz-appearance: textfield;
+  font-variant-numeric: tabular-nums;
+}
+
+.exercise-input {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  padding: 8px 10px;
+}
+
+/* Hover signals interactivity with a muted border outline — since the
+   background is already --c-rule, only the border can carry the cue. */
+.number-input:hover,
+.exercise-input:hover { border-color: var(--c-muted); }
+
+.number-input:focus,
+.exercise-input:focus {
+  background: var(--c-paper);
+  border-color: var(--c-ink);
+}
+
+.number-input::placeholder { color: var(--c-muted); }
+
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.delete-btn {
+  font-family: var(--ff-display);
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--c-muted);
+  background: transparent;
+  border: 0;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: var(--r-2);
+}
+
+.delete-btn:hover { color: var(--c-ink); background: var(--c-rule); }
+
+@media (max-width: 560px) {
+  /* Stay on one line. The family column collapses to just the chip
+     (text hides); the exercise cell ellipsizes if it has to. Reps×wt
+     and end stay at the row's trailing edge. */
+  .row {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "family exercise repswt end";
+    column-gap: var(--s-2);
+    padding: var(--s-3) 0;
+  }
+  .family-text { display: none; }
+  .cell-exercise { font-size: 13px; }
+  .cell-reps-wt { font-size: 12px; }
+  .reps-x-wt { grid-template-columns: 1.4em auto 2.4em; column-gap: 6px; }
+  /* Edit-mode numerics: tighter tracks so reps + × + weight all fit on
+     one line at 375px. Inputs themselves are 16px (see below) to keep
+     iOS Safari from auto-zooming the page when one gains focus —
+     anything under 16px triggers that lens. Tracks are sized in `em`
+     so they scale with the input's own font-size, not the row's. */
+  .reps-x-wt-edit { grid-template-columns: 2.4em auto 3em; column-gap: 4px; }
+  /* 16px floor on inputs: any smaller and iOS Safari zooms in on focus.
+     Tabular-nums + tight padding keep two-digit reps and three-digit
+     weights legible without the cell ballooning. */
+  .number-input { font-size: 16px; padding: 6px 5px; }
+  .exercise-input { font-size: 16px; padding: 6px 8px; }
+  .cell-end { font-size: 13px; }
+  .delete-btn { font-size: 16px; padding: 4px; }
+}

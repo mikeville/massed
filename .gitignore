@@ -1,0 +1,11 @@
+node_modules
+dist
+.DS_Store
+*.local
+.env
+.env.local
+*.tsbuildinfo
+
+# pipeline reports — internal only, do not publish
+FORK_REPORT.md
+SANITIZATION_REPORT.md

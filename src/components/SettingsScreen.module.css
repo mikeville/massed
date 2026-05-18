@@ -1,0 +1,193 @@
+/* SettingsScreen — single-column form for gist sync config + actions.
+   URL-only route, not linked from main app chrome. Mobile-first; the
+   wider desktop view just gets a centered max-width column. */
+
+.page {
+  padding: var(--s-6) var(--s-5) var(--s-12);
+  max-width: 540px;
+  margin: 0 auto;
+  color: var(--c-ink);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
+  margin-bottom: var(--s-6);
+}
+
+.back {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  color: var(--c-muted);
+  text-decoration: none;
+}
+
+.back:hover { color: var(--c-ink); }
+
+.title {
+  font-family: var(--ff-display);
+  font-size: 32px;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.section {
+  margin-bottom: var(--s-8);
+}
+
+.heading {
+  font-family: var(--ff-body);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-muted);
+  margin: 0 0 var(--s-3) 0;
+}
+
+.status {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  color: var(--c-ink);
+}
+
+.statusError { color: var(--c-ink); }
+
+.statusMeta {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-top: var(--s-1);
+}
+
+.statusMeta code { font-family: inherit; }
+
+.field {
+  display: block;
+  margin-bottom: var(--s-3);
+}
+
+.label {
+  display: block;
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-bottom: var(--s-1);
+}
+
+.input {
+  width: 100%;
+  background: var(--c-rule);
+  border: 1px solid transparent;
+  border-radius: var(--r-3);
+  padding: var(--s-2) var(--s-3);
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--c-ink);
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--c-ink);
+}
+
+.input::placeholder {
+  color: var(--c-muted);
+  opacity: 0.6;
+}
+
+.row {
+  display: flex;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--c-ink);
+  background: transparent;
+  color: var(--c-ink);
+  border-radius: var(--r-3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover:not(:disabled) { background: var(--c-rule); }
+
+.btn:disabled {
+  border-color: var(--c-rule);
+  color: var(--c-muted);
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  background: var(--c-ink);
+  color: var(--c-paper);
+}
+
+.btnPrimary:hover:not(:disabled) { opacity: 0.85; }
+
+.btnPrimary:disabled {
+  background: var(--c-rule);
+  border-color: var(--c-rule);
+  color: var(--c-muted);
+}
+
+.btnSubtle {
+  border-color: transparent;
+  color: var(--c-muted);
+}
+
+.btnSubtle:hover:not(:disabled) {
+  color: var(--c-ink);
+  background: var(--c-rule);
+}
+
+.testResult {
+  margin-top: var(--s-3);
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+.steps {
+  margin: 0;
+  padding-left: var(--s-4);
+  font-size: 13px;
+  color: var(--c-ink);
+  line-height: 1.65;
+}
+
+.steps li { margin-bottom: var(--s-3); }
+.steps li::marker { color: var(--c-muted); }
+
+.steps a {
+  color: var(--c-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.steps code {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  background: var(--c-rule);
+  padding: 1px 4px;
+  border-radius: var(--r-2);
+}
+
+.note {
+  margin: var(--s-4) 0 0 0;
+  font-size: 12px;
+  color: var(--c-muted);
+  font-style: italic;
+}

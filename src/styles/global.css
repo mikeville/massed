@@ -1,0 +1,34 @@
+/* Resets */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  /* min-height — not height — so the page scrolls when the phone frame
+     plus header is taller than the viewport. */
+  min-height: 100%;
+}
+
+body {
+  /* Paper is the page itself now — no separate card-on-deck container. */
+  background: var(--c-paper);
+  color: var(--c-ink);
+  font-family: var(--ff-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font-family: inherit;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Mono utility used in inline code-ish bits */
+.mono {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}

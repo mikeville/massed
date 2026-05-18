@@ -1,0 +1,273 @@
+/* CheckInScreen — editorial layout. Sits directly on the page (no card). */
+
+.checkin {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 28px 32px 32px;
+}
+
+/* Masthead row — min-height matches the route affordance (36px) so the
+   title vertically centers against the same axis on both /check-in and
+   /log. padding-right reserves the corner for the affordance, which is
+   absolutely positioned at the App level. */
+.checkin__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 36px;
+  padding-right: 48px;
+}
+
+.checkin__top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkin__issue {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--c-muted);
+  /* Long-pressable as the hidden reset escape hatch. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.checkin__rule {
+  margin: 14px 0 0;
+  height: 4px;
+  background: var(--c-ink);
+}
+
+.checkin__rule-thin {
+  margin: 4px 0 0;
+  height: 1px;
+  background: var(--c-ink);
+}
+
+.checkin__body {
+  padding: 20px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Period dropdown — modeled on FamilyChip's popover. Trigger reads the
+   current deck label; popover anchors below. */
+.checkin__period {
+  position: relative;
+  display: inline-flex;
+}
+
+.checkin__period-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: transparent;
+  color: var(--c-ink);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.checkin__period-trigger:hover { background: var(--c-rule); }
+
+.checkin__period-caret {
+  font-size: 9px;
+  line-height: 1;
+  color: var(--c-muted);
+}
+
+.checkin__period-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--c-paper);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  box-shadow: 0 4px 12px rgba(20, 19, 15, 0.08);
+  min-width: 132px;
+}
+
+.checkin__period-option {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: transparent;
+  color: var(--c-ink);
+  border: 0;
+  border-radius: var(--r-2);
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.checkin__period-option:hover { background: var(--c-rule); }
+
+.checkin__period-option-active {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  font-weight: 700;
+}
+
+.checkin__period-option-active:hover { background: var(--c-ink); }
+
+/* View toggle — segmented control. One shared outer border; an internal
+   hairline on every button after the first separates the segments. Active
+   segment fills with ink, inactive segments share the transparent bg. */
+.checkin__view {
+  display: inline-flex;
+  height: 28px;
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+
+.checkin__view button {
+  padding: 0 12px;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: transparent;
+  color: var(--c-muted);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.checkin__view button + button { border-left: 1px solid var(--c-ink); }
+
+.checkin__view button:hover { background: var(--c-rule); }
+
+.checkin__view button.is-active {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  font-weight: 700;
+}
+
+/* Stats — sit directly under the masthead rule pair. The bottom rule
+   carries ink weight (the only "structural" hairline on this screen
+   that isn't tied to --c-rule); it reads as a continuation of the
+   masthead's ink rule pair, bracketing the stats as a fixed section. */
+.checkin__stats {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--c-ink);
+  display: flex;
+  justify-content: space-between;
+}
+
+.checkin__stat {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.checkin__stat b {
+  display: block;
+  font-family: var(--ff-display);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--c-ink);
+  margin-bottom: 2px;
+}
+
+/* Headline section — variable in length. No min-height; framer-motion's
+   `layout` on the surrounding siblings smooths the vertical shift when
+   the timeframe (and so the fact, and so the headline) changes. */
+.checkin__hed-section {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.checkin__eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--c-muted);
+  margin-bottom: 10px;
+}
+
+/* The headline mixes two type voices — an upright compressed display
+   sans (lead + trail) and an italic serif (the punchline noun). Their
+   sizes are exposed as separate CSS custom properties so they can be
+   tuned independently — try setting different values for
+   `--hed-upright-size` vs `--hed-italic-size` in DevTools to find the
+   right visual balance. They start at the same clamp so the legacy
+   behavior is preserved. */
+.checkin__hed {
+  --hed-upright-size: clamp(40px, 8vw, 44px);
+  --hed-italic-size:  clamp(40px, 8vw, 64px);
+
+  font-family: var(--ff-headline);
+  /* Bricolage Grotesque wght axis ranges 300..800 — 800 is the
+     boldest weight available. */
+  font-weight: 800;
+  font-size: var(--hed-upright-size);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  /* text-transform: uppercase; */
+  font-variation-settings: "opsz" 96, "wdth" 95;
+  margin: 0;
+}
+
+.checkin__hed-upright {
+  font-size: var(--hed-upright-size);
+}
+
+/* Italic rule kept as a separate selector so the two voices CAN be
+   diverged later (font-style, font-family, font-size, letter-spacing
+   are all here, ready to be uncommented). For now, every declaration
+   that would visually distinguish the italic from the upright is
+   either commented out or matches the upright — so both spans render
+   the same. Treat this rule as the "diverge here" knob. */
+.checkin__hed-italic {
+  /* font-style: italic; */
+  /* font-family: var(--ff-display); */
+  font-weight: 800;
+  /* font-size: var(--hed-italic-size); */
+  text-transform: none;
+  letter-spacing: -0.025em;
+}
+
+.checkin__viz-frame {
+  width: 100%;
+  margin-top: 20px;
+}
+
+@media (max-width: 560px) {
+  .checkin {
+    padding: 22px 16px 32px;
+  }
+
+  .checkin__top-right { gap: 6px; }
+
+  .checkin__hed-section { margin-top: 18px; }
+}

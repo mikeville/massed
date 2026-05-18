@@ -1,0 +1,76 @@
+/* LogScreen — page chrome + mode toggle. The body of each mode comes
+   from VoiceLogScreen.module.css or ManualLogScreen.module.css. */
+
+.log {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 28px 32px 32px;
+}
+
+/* Masthead row — min-height + padding-right mirror .checkin__top so the
+   title centers on the same vertical axis as the route affordance,
+   which is absolutely positioned at the App level. */
+.log__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 36px;
+  padding-right: 48px;
+}
+
+.log__issue {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--c-muted);
+}
+
+.log__rule {
+  margin: 14px 0 0;
+  height: 4px;
+  background: var(--c-ink);
+}
+
+.log__rule-thin {
+  margin: 4px 0 0;
+  height: 1px;
+  background: var(--c-ink);
+}
+
+/* The mode toggle sits between the rule lines and the form body.
+   Tabs read as a quiet pair — neither shouts. Active tab gets an
+   underline + ink weight; the inactive sits at muted. */
+.log__mode-row {
+  display: flex;
+  gap: var(--s-5);
+  margin: var(--s-4) 0 0;
+}
+
+.log__mode-btn {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--c-muted);
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+}
+
+.log__mode-btn:hover { color: var(--c-ink); }
+
+.log__mode-btn-active {
+  color: var(--c-ink);
+  border-bottom-color: var(--c-ink);
+}
+
+@media (max-width: 560px) {
+  .log { padding: 22px 16px 28px; }
+}

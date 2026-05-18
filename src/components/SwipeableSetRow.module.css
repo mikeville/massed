@@ -1,0 +1,134 @@
+/* SwipeableSetRow — hover-reveal (desktop) and swipe-reveal (touch)
+   for the per-row edit + delete actions. The shell clips the dragging
+   surface so off-screen positions don't leak outside the table. */
+
+.shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-2);
+  /* Negative side margin matches the prior tap-row's hover surface
+     so the interactive region reaches the table's gutter edges. The
+     row content keeps its own padding via the static SetRow grid. */
+  margin: 0 calc(-1 * var(--s-2));
+  /* Reveal-state custom property — set to 1 when the action layer is
+     visible (hover/focus on desktop, or opened via swipe). Inherits
+     into the SetRow inside, where `.cell-end` reads it to fade the
+     total out so the trash glyph doesn't collide with the lb number.
+     Default 0 means "actions hidden, total visible." */
+  --actions-visible: 0;
+}
+
+/* The translatable surface that holds the SetRow. On desktop it
+   never moves; on touch it slides left under finger drag. Paper bg
+   covers the action layer at rest so total-column numbers read as
+   the natural right edge of the row. */
+.surface {
+  position: relative;
+  z-index: 1;
+  background: var(--c-paper);
+  padding: 0 var(--s-2);
+  cursor: pointer;
+  /* Suppress the iOS tap-highlight rectangle — the hover/swipe surface
+     is the visual feedback we want. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.surface:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--c-ink);
+}
+
+/* Action layer — two ink-stroke icon buttons anchored to the right
+   edge of the shell. Sits in the same grid cell as the row's total
+   column visually, but lives outside the dragging surface so it
+   stays still while the surface moves. */
+.actions {
+  position: absolute;
+  inset: 0 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 var(--s-2);
+  /* Right-edge alignment for the icon pair; width set implicitly by
+     contents so the JS ACTIONS_WIDTH constant (88px) just needs to
+     roughly match the rendered width for snap math. */
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-2);
+  color: var(--c-muted);
+  cursor: pointer;
+  /* The icon is the affordance; no button chrome at rest. Border
+     materializes on hover so the icon reads as a tappable target. */
+  transition: color 120ms ease, border-color 120ms ease, background-color 120ms ease;
+}
+
+.action-btn:hover,
+.action-btn:focus-visible {
+  color: var(--c-ink);
+  border-color: var(--c-ink);
+  outline: none;
+}
+
+/* Delete keeps the same restraint as edit. The destructive intent is
+   conveyed by the trash glyph + position (rightmost = "outside" the
+   row, harder to fat-finger) rather than by red — which doesn't
+   exist in the four-token palette and would import a foreign
+   aesthetic for one button. */
+.action-delete { /* kept as a hook for future per-glyph tuning */ }
+
+/* ── Reveal mechanics ──────────────────────────────────────────────
+   Two paths into "actions visible":
+     1. Desktop hover/focus: opacity 0 → 1 on the shell pseudo.
+     2. Touch swipe: surface translates left, actions emerge from
+        underneath. The `shellOpen` class on the shell sets opacity 1
+        unconditionally so the actions remain visible after a swipe
+        even when the cursor isn't over the row.
+*/
+
+.actions {
+  opacity: 0;
+  transition: opacity 140ms ease-out;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .shell:hover .actions,
+  .shell:focus-within .actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .shell:hover,
+  .shell:focus-within { --actions-visible: 1; }
+}
+
+.shell-open .actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shell-open { --actions-visible: 1; }
+
+/* When opened, ensure the icons sit above the surface's paper bg so
+   they're not hidden by the translated-but-still-visible right edge
+   of the surface. Without this, on a 50% open partial drag, the
+   action bar peeks but is partly behind the row paper. */
+.shell:hover .actions,
+.shell:focus-within .actions,
+.shell-open .actions {
+  z-index: 2;
+}
+
+/* Mobile: the action targets need to be bigger for finger tapping.
+   Same visual restraint, larger hit area. */
+@media (hover: none) {
+  .action-btn { width: 36px; height: 36px; }
+}

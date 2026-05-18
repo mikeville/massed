@@ -1,0 +1,47 @@
+.app {
+  min-height: 100%;
+  width: 100%;
+}
+
+/* Column wrapper — mirrors the 720px max-width that .checkin / .log
+   each set. Keeping it here lets the route affordance (absolutely
+   positioned) anchor to the column edge, not the viewport. */
+.app__column {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* The route affordance — anchored to the column edge so it lines up
+   with the right edge of each screen's masthead padding. Size and
+   position stay constant; rotation, fill, border, and color animate.
+   Sits above the screen content (z-index) so the spin reads cleanly
+   over the masthead rules. */
+.app__affordance {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  z-index: 5;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-ink);
+  border-radius: 50%;
+  background: var(--c-ink);
+  color: var(--c-paper);
+  font-family: var(--ff-display);
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  /* Avoid the glyph drifting off-center as the box rotates. */
+  transform-origin: 50% 50%;
+}
+
+@media (max-width: 560px) {
+  .app__affordance { right: 16px; top: 22px; }
+}

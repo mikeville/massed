@@ -1,0 +1,177 @@
+/* SetTable — date-grouped read-only view. Row internals come from
+   SetRow.module.css. This file owns only the column header, date
+   headers, and the empty state. */
+
+.table {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Column header row — mono caps muted, ink rule below. Mirrors
+   SetRow's grid (minmax(0, X%) tracks + column-gap) exactly so the
+   computed column edges line up with the data rows beneath. */
+.header-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 38%) minmax(0, 18%) minmax(0, 22%) minmax(0, 22%);
+  grid-template-areas: "exercise family repswt end";
+  column-gap: var(--s-2);
+  align-items: baseline;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--c-ink);
+}
+
+.header-cell {
+  font-family: var(--ff-mono);
+  font-weight: 400;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--c-muted);
+  text-align: left;
+}
+
+.header-exercise { grid-area: exercise; }
+.header-family   { grid-area: family; }
+
+/* reps × wt reads as one compact phrase, same visual rhythm as the
+   data's `6 × 85`. The grid track widths in SetRow (1.6em / 2.6em) are
+   sized for 1–2 digit numbers and would distort 4-letter words, so the
+   header stays as a plain text run sharing the column's left edge. */
+.header-reps-wt { grid-area: repswt; }
+
+.header-end     { grid-area: end; text-align: right; }
+.header-x       { color: var(--c-muted); }
+
+.session {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Date header — full-width bar (label left, total right) with an ink
+   rule below acting as the session divider. */
+.date-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  padding: var(--s-4) 0 var(--s-2);
+  border-bottom: 1px solid var(--c-ink);
+}
+
+.session + .session .date-row { padding-top: var(--s-6); }
+
+.date-label,
+.date-total {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+
+.date-label { color: var(--c-ink); font-weight: 700; }
+.date-total { color: var(--c-muted); font-weight: 400; }
+
+/* Edit wrapper — sits where the static row was. Same horizontal
+   negative margin so the inline edit visually replaces the swipe row
+   pixel-for-pixel. The faint surface is kept so the editing row reads
+   as the "active" cell in the table. */
+.edit-wrap {
+  margin: 0 calc(-1 * var(--s-2));
+  padding: 0 var(--s-2);
+  background-color: var(--c-rule);
+  border-radius: var(--r-2);
+}
+
+/* Undo toast — fixed to the viewport bottom so the user sees it
+   regardless of how far they've scrolled. Pill that floats above the
+   table, centered, with safe-area padding so it clears the iOS home
+   indicator and gives the action button breathing room from the
+   bottom edge.
+
+   z-index sits above the table and any open swipe row (z 2) but below
+   route-level overlays if any are ever added (would use 100+). */
+.undo-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--s-5) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--s-4));
+  padding: var(--s-3) var(--s-3);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  background: var(--c-paper);
+  /* Lift it just enough off the page so it reads as floating, not as a
+     row in the table. Soft shadow tuned to the warm paper bg. */
+  box-shadow: 0 6px 20px oklch(0 0 0 / 0.12);
+}
+
+.undo-text {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--c-ink);
+}
+
+.undo-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.undo-btn {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 6px 10px;
+  background: var(--c-ink);
+  color: var(--c-paper);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  cursor: pointer;
+}
+
+.undo-btn:hover { background: transparent; color: var(--c-ink); }
+
+.undo-dismiss {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--c-muted);
+  font-family: var(--ff-mono);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.undo-dismiss:hover { color: var(--c-ink); }
+
+.empty {
+  padding: var(--s-8) 0;
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--c-muted);
+  margin: 0;
+}
+
+@media (max-width: 560px) {
+  .table { margin-top: 4px; }
+  /* Header columns don't align with SetRow's mobile reflow; hide rather
+     than mislead. */
+  .header-row { display: none; }
+  .date-row { padding: var(--s-4) 0 var(--s-2); }
+}

@@ -1,0 +1,141 @@
+/* ExerciseCombobox — the typeahead exercise cell.
+   The input is unstyled here; SetRow owns the cell-level layout and the
+   typography (body sans 14px). This file only owns the popover. */
+
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Default input — chrome-less. SetRow's `inputClassName` is responsible
+   for the full visual treatment (padding, background, focus state). */
+.input {
+  width: 100%;
+}
+
+.input::placeholder {
+  color: var(--c-muted);
+  font-style: italic;
+}
+
+/* Floating menu under the input. Below z-index of the family-chip popover
+   (which is 30); typeahead is 25 so chip popovers stack above when both
+   are open in the same row. */
+.popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 25;
+  background: var(--c-paper);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  box-shadow: 0 4px 12px rgba(20, 19, 15, 0.08);
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  min-width: 220px;
+}
+
+.popover-note {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--c-muted);
+  margin: 4px 6px;
+}
+
+.popover-note strong {
+  color: var(--c-ink);
+  font-weight: 400;
+}
+
+.chip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  background: transparent;
+  border: 1px solid var(--c-rule);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--c-ink);
+}
+
+.chip:hover {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  border-color: var(--c-ink);
+}
+
+.add-new {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 7px 8px;
+  background: transparent;
+  color: var(--c-ink);
+  border: 1px dashed var(--c-ink);
+  border-radius: var(--r-2);
+  cursor: pointer;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-align: left;
+}
+
+.add-new:hover { background: var(--c-ink); color: var(--c-paper); }
+
+.add-new strong { font-weight: 600; }
+
+/* Family picker — appears when adding a new exercise. One option per
+   family, each with its own chip preview and the family label. */
+.family-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.family-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  background: transparent;
+  border: 1px solid var(--c-rule);
+  border-radius: var(--r-2);
+  cursor: pointer;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-ink);
+  text-align: left;
+}
+
+.family-option:hover {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  border-color: var(--c-ink);
+}
+
+@media (max-width: 560px) {
+  .popover { min-width: 0; }
+  .family-list { grid-template-columns: 1fr; }
+}

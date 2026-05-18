@@ -1,0 +1,79 @@
+/* FamilyChip — the small textured square. Sizing parameterized by the
+   `size` prop on the component; this file owns only positioning, the
+   button affordance, and the override popover. */
+
+.chip-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* The SVG chip itself. Block display so it doesn't pick up the text
+   baseline jitter from inline-block. */
+.chip {
+  display: block;
+  flex: none;
+}
+
+/* Editable mode: chip-as-button. Larger hit target than the visible
+   square via padding. Resets the default button chrome. */
+.chip-btn {
+  background: transparent;
+  border: 0;
+  padding: 4px;
+  margin: -4px;
+  cursor: pointer;
+  border-radius: var(--r-2);
+  display: inline-flex;
+  align-items: center;
+}
+
+.chip-btn:hover { background: var(--c-rule); }
+
+.chip-btn:focus-visible {
+  outline: 1px solid var(--c-ink);
+  outline-offset: 1px;
+}
+
+/* Override popover — anchored under the chip, list of all seven families.
+   Each option = a chip preview + label. The active option has an ink
+   background to read as "currently selected." */
+.popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--c-paper);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-2);
+  box-shadow: 0 4px 12px rgba(20, 19, 15, 0.08);
+  min-width: 132px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-2);
+  cursor: pointer;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-ink);
+  text-align: left;
+}
+
+.option:hover { background: var(--c-rule); }
+
+.option-active { background: var(--c-ink); color: var(--c-paper); }
+.option-active:hover { background: var(--c-ink); }
+
+.option-label { white-space: nowrap; }
