@@ -11,6 +11,8 @@
  * later) passes the API key in.
  */
 
+import type { Usage } from './pricing';
+
 /**
  * Family — duplicated from src/lib/types.ts so this module stays in
  * the Node-only tsconfig project without crossing project boundaries.
@@ -27,6 +29,17 @@ export interface ParsedRow {
 
 export interface ParsedWorkout {
   rows: ParsedRow[];
+}
+
+/**
+ * Wrap the parsed workout with the metadata callers need for telemetry.
+ * The client only sees `workout`; the Netlify function additionally
+ * reads `usage` and `model` to compute cost and log the event.
+ */
+export interface ParseResult {
+  workout: ParsedWorkout;
+  usage: Usage;
+  model: string;
 }
 
 const FAMILY_VALUES: readonly Family[] = [
@@ -105,7 +118,7 @@ interface ParseInput {
 export async function parseWorkout({
   transcript,
   apiKey,
-}: ParseInput): Promise<ParsedWorkout> {
+}: ParseInput): Promise<ParseResult> {
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY is not set on the server.');
   }
@@ -137,9 +150,11 @@ export async function parseWorkout({
   }
 
   // The response has a `content` array. With tool_choice forced, we
-  // expect a single tool_use block.
+  // expect a single tool_use block. `usage` rides alongside for cost
+  // accounting.
   const data = (await res.json()) as {
     content?: Array<{ type: string; name?: string; input?: unknown }>;
+    usage?: { input_tokens?: number; output_tokens?: number };
   };
   const toolBlock = data.content?.find(
     (b) => b.type === 'tool_use' && b.name === 'record_workout'
@@ -148,7 +163,12 @@ export async function parseWorkout({
     throw new Error('model did not call the record_workout tool.');
   }
 
-  return validate(toolBlock.input);
+  const usage: Usage = {
+    input_tokens: data.usage?.input_tokens ?? 0,
+    output_tokens: data.usage?.output_tokens ?? 0,
+  };
+
+  return { workout: validate(toolBlock.input), usage, model: MODEL };
 }
 
 /**

@@ -10,6 +10,7 @@
  * Vite dev middleware in vite.config.ts today, a Netlify function
  * later) passes the API key in.
  */
+import type { Usage } from './pricing';
 /**
  * Family — duplicated from src/lib/types.ts so this module stays in
  * the Node-only tsconfig project without crossing project boundaries.
@@ -25,9 +26,19 @@ export interface ParsedRow {
 export interface ParsedWorkout {
     rows: ParsedRow[];
 }
+/**
+ * Wrap the parsed workout with the metadata callers need for telemetry.
+ * The client only sees `workout`; the Netlify function additionally
+ * reads `usage` and `model` to compute cost and log the event.
+ */
+export interface ParseResult {
+    workout: ParsedWorkout;
+    usage: Usage;
+    model: string;
+}
 interface ParseInput {
     transcript: string;
     apiKey: string;
 }
-export declare function parseWorkout({ transcript, apiKey, }: ParseInput): Promise<ParsedWorkout>;
+export declare function parseWorkout({ transcript, apiKey, }: ParseInput): Promise<ParseResult>;
 export {};

@@ -103,13 +103,18 @@ export async function parseWorkout({ transcript, apiKey, }) {
         throw new Error(`anthropic ${res.status}: ${body || res.statusText}`);
     }
     // The response has a `content` array. With tool_choice forced, we
-    // expect a single tool_use block.
+    // expect a single tool_use block. `usage` rides alongside for cost
+    // accounting.
     const data = (await res.json());
     const toolBlock = data.content?.find((b) => b.type === 'tool_use' && b.name === 'record_workout');
     if (!toolBlock || !toolBlock.input) {
         throw new Error('model did not call the record_workout tool.');
     }
-    return validate(toolBlock.input);
+    const usage = {
+        input_tokens: data.usage?.input_tokens ?? 0,
+        output_tokens: data.usage?.output_tokens ?? 0,
+    };
+    return { workout: validate(toolBlock.input), usage, model: MODEL };
 }
 /**
  * Narrow unknown → ParsedWorkout. The schema is enforced server-side

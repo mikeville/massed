@@ -48,10 +48,12 @@ function parseWorkoutDevPlugin(apiKey: string): Plugin {
             typeof (body as { transcript?: unknown }).transcript === 'string'
               ? ((body as { transcript: string }).transcript)
               : '';
+          // Dev intentionally doesn't log to Supabase — running
+          // `npm run dev` shouldn't pollute the production dataset.
           const out = await parseWorkout({ transcript, apiKey });
           res.statusCode = 200;
           res.setHeader('content-type', 'application/json');
-          res.end(JSON.stringify(out));
+          res.end(JSON.stringify(out.workout));
         } catch (e) {
           const message = e instanceof Error ? e.message : 'unknown error';
           res.statusCode = 500;

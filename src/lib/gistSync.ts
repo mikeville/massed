@@ -117,6 +117,56 @@ export async function probeGist(config: GistConfig): Promise<void> {
   );
 }
 
+/* Connect-with-token flow: scan the account for an existing massed.json
+   gist and reuse it, or create a fresh one seeded with local data. The
+   user never has to know what a "gist id" is — pasting a working token
+   is sufficient.
+
+   `created: false` signals "we found your data on github" — the caller
+   should pull so this device matches the canonical store. `created:
+   true` means we just minted a fresh gist seeded with the local data;
+   no pull needed. */
+export async function findOrCreateGist(
+  pat: string,
+  sessions: Session[],
+): Promise<{ gistId: string; created: boolean }> {
+  // Scan first page of gists. A personal account rarely has >100 gists;
+  // if it does, the user can fall back to bringing their own id via the
+  // legacy saveConfig path — but the magic flow covers the common case.
+  const listRes = await gistFetch('?per_page=100', { method: 'GET' }, pat);
+  const list = (await listRes.json()) as Array<{
+    id: string;
+    files?: Record<string, unknown>;
+  }>;
+  for (const gist of list) {
+    if (gist.files?.[GIST_FILENAME] || gist.files?.[LEGACY_GIST_FILENAME]) {
+      return { gistId: gist.id, created: false };
+    }
+  }
+  // None found — create one with the current local data so the first
+  // push doesn't have to round-trip a second time.
+  const createRes = await gistFetch(
+    '',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: 'massed workout data',
+        public: false,
+        files: {
+          [GIST_FILENAME]: { content: JSON.stringify(sessions, null, 2) },
+        },
+      }),
+    },
+    pat,
+  );
+  const data = (await createRes.json()) as { id?: string };
+  if (!data.id) {
+    throw { message: 'github did not return a gist id' } as GistError;
+  }
+  return { gistId: data.id, created: true };
+}
+
 export function formatGistError(e: unknown): string {
   if (e && typeof e === 'object' && 'message' in e) {
     return String((e as { message: unknown }).message);

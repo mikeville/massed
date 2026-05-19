@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Session } from './types';
 import {
   fetchGist,
+  findOrCreateGist,
   formatGistError,
   parseGistInput,
   probeGist,
@@ -54,6 +55,11 @@ export interface UseGistSync {
     gistInput: string;
     pat: string;
   }) => Promise<{ ok: true } | { ok: false; error: string }>;
+  /** One-shot connect: take a token, find or create a massed.json gist,
+      persist the config. The "gist id" never crosses the UI. */
+  connectWithToken: (
+    pat: string,
+  ) => Promise<{ ok: true } | { ok: false; error: string }>;
 }
 
 function loadConfig(): GistConfig | null {
@@ -207,6 +213,45 @@ export function useGistSync(
     [],
   );
 
+  const connectWithToken: UseGistSync['connectWithToken'] = useCallback(
+    async (pat) => {
+      const trimmed = pat.trim();
+      if (!trimmed) {
+        return { ok: false as const, error: 'paste your token first' };
+      }
+      setStatus({ kind: 'syncing' });
+      try {
+        const { gistId, created } = await findOrCreateGist(
+          trimmed,
+          sessionsRef.current,
+        );
+        const next: GistConfig = { gistId, pat: trimmed };
+        localStorage.setItem(CONFIG_KEY, JSON.stringify(next));
+        setConfig(next);
+        if (!created) {
+          // Existing gist on the account — treat it as canonical so a
+          // returning user on a new device gets their data back. The
+          // suppress flag prevents the resulting setSessions from
+          // triggering an auto-push of stale local data.
+          const remote = await fetchGist({ gistId, pat: trimmed });
+          suppressNextRef.current = true;
+          setSessions(remote);
+          localStorage.setItem(HAS_PULLED_KEY, '1');
+        }
+        const at = new Date().toISOString();
+        localStorage.setItem(LAST_SYNCED_KEY, at);
+        setLastSyncedAt(at);
+        setStatus({ kind: 'synced', at });
+        return { ok: true as const };
+      } catch (e) {
+        const error = formatGistError(e);
+        setStatus({ kind: 'error', message: error });
+        return { ok: false as const, error };
+      }
+    },
+    [setSessions],
+  );
+
   return {
     config,
     status,
@@ -216,5 +261,6 @@ export function useGistSync(
     pushNow,
     pullNow,
     testConnection,
+    connectWithToken,
   };
 }
