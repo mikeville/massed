@@ -198,17 +198,17 @@
   .cell-exercise { font-size: 13px; }
   .cell-reps-wt { font-size: 12px; }
   .reps-x-wt { grid-template-columns: 1.4em auto 2.4em; column-gap: 6px; }
-  /* Edit-mode numerics: tighter tracks so reps + × + weight all fit on
-     one line at 375px. Inputs themselves are 16px (see below) to keep
-     iOS Safari from auto-zooming the page when one gains focus —
-     anything under 16px triggers that lens. Tracks are sized in `em`
-     so they scale with the input's own font-size, not the row's. */
-  .reps-x-wt-edit { grid-template-columns: 2.4em auto 3em; column-gap: 4px; }
+  /* Edit-mode numerics: tracks sized to fit 3-digit reps + 4-digit
+     weights without clipping at 16px (the iOS no-zoom floor). The
+     exercise column auto-shrinks to absorb the difference — names
+     ellipsize cleanly, but two- and three-digit numbers must not.
+     Tracks are sized in `em` so they scale with the input's own
+     font-size, not the row's. */
+  .reps-x-wt-edit { grid-template-columns: 3em auto 4em; column-gap: 4px; }
   /* 16px floor on inputs: any smaller and iOS Safari zooms in on focus.
-     Tabular-nums + tight padding keep two-digit reps and three-digit
-     weights legible without the cell ballooning. */
-  .number-input { font-size: 16px; padding: 6px 5px; }
-  .exercise-input { font-size: 16px; padding: 6px 8px; }
+     Tight horizontal padding gives the digits the cell, not the chrome. */
+  .number-input { font-size: 16px; padding: 6px 4px; }
+  .exercise-input { font-size: 16px; padding: 6px 6px; }
   .cell-end { font-size: 13px; }
   .delete-btn { font-size: 16px; padding: 4px; }
 }

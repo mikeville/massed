@@ -129,7 +129,7 @@ export function CheckInScreen({
           onPointerLeave={cancelLongPress}
           onPointerCancel={cancelLongPress}
         >
-          massed
+          Massed
         </span>
         {/* The view toggle + period dropdown live above the rule pair —
             same masthead slot on every viewport. The route affordance

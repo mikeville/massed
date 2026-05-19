@@ -9,13 +9,10 @@
 }
 
 /* Date row — sits above the column header. The "for" prefix and the
-   native date input read as one phrase: "for [thu · may 14]". The info
-   icon sits on the right edge as a quiet affordance; tapping it opens
-   a single-line tooltip explaining the one-date-per-save rule. */
+   native date input read as one phrase: "for [thu · may 14]". */
 .date-row {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: var(--s-3);
 }
 
@@ -63,50 +60,6 @@
 
 .date-input::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
-}
-
-.date-hint {
-  position: relative;
-}
-
-/* ⓘ button — a 16px target that reads as a glyph at rest. No border,
-   no fill; the icon character carries the affordance. */
-.date-info-btn {
-  background: transparent;
-  border: none;
-  padding: 0;
-  font-family: var(--ff-mono);
-  font-size: 13px;
-  line-height: 1;
-  color: var(--c-muted);
-  cursor: pointer;
-}
-
-.date-info-btn:hover,
-.date-info-btn[aria-expanded="true"] {
-  color: var(--c-ink);
-}
-
-/* Tooltip pops from the right edge so it doesn't push the input column
-   around when it opens. Paper bg + ink border + soft shadow matches
-   the dropdown shape used by FamilyChip and the period menu. */
-.date-tooltip {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  width: max-content;
-  max-width: 240px;
-  margin: 0;
-  padding: var(--s-2) var(--s-3);
-  background: var(--c-paper);
-  border: 1px solid var(--c-ink);
-  border-radius: var(--r-2);
-  box-shadow: 0 4px 12px oklch(0 0 0 / 0.08);
-  font-family: var(--ff-mono);
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--c-ink);
-  z-index: 2;
 }
 
 /* Column header row — mirrors SetRow's grid so labels sit directly

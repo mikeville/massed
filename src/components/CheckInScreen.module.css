@@ -30,11 +30,14 @@
 }
 
 .checkin__issue {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--c-muted);
+  /* Wordmark — the headline display sans set at small size, in ink so
+     it anchors the masthead alongside the controls on the right. */
+  font-family: var(--ff-headline);
+  font-weight: 600;
+  font-size: 15px;
+  font-variation-settings: "opsz" 14, "wdth" 95;
+  letter-spacing: -0.01em;
+  color: var(--c-ink);
   /* Long-pressable as the hidden reset escape hatch. */
   user-select: none;
   -webkit-user-select: none;

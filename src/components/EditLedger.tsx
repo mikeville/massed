@@ -27,8 +27,7 @@ import styles from './EditLedger.module.css';
  *
  * Date semantics: a single date governs every draft in the batch. To
  * log sets across multiple days the user saves, then starts another
- * entry — the small info icon next to the date input states this
- * inline so the constraint never has to be inferred.
+ * entry.
  */
 
 interface Draft {
@@ -319,17 +318,12 @@ export function EditLedger({
 }
 
 /**
- * DateRow — "for <input type=date> ⓘ".
+ * DateRow — "for <input type=date>".
  *
  * Native <input type="date"> gives us locale-correct picker UI on every
  * platform for zero dependency cost. We strip Chrome's default chrome
  * (clear button, picker indicator border) in CSS and keep the field
  * legible-but-quiet by inheriting mono caps from the surrounding label.
- *
- * The ⓘ button reveals a single line of copy as a click/hover tooltip:
- * "one date per save. log another day as a separate entry." That's the
- * only place we explain why dates aren't per-row — keeping the
- * constraint discoverable without bloating the row UI.
  */
 function DateRow({
   value,
@@ -340,25 +334,6 @@ function DateRow({
   max: string;
   onChange: (next: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    function onDown(e: MouseEvent) {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false);
-    }
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
-
   return (
     <div className={styles.dateRow}>
       <label className={styles.dateLabel}>
@@ -372,22 +347,6 @@ function DateRow({
           aria-label="date for these sets"
         />
       </label>
-      <div ref={wrapRef} className={styles.dateHint}>
-        <button
-          type="button"
-          className={styles.dateInfoBtn}
-          aria-label="why one date per save"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-        >
-          ⓘ
-        </button>
-        {open && (
-          <p className={styles.dateTooltip} role="tooltip">
-            one date per save. log another day as a separate entry.
-          </p>
-        )}
-      </div>
     </div>
   );
 }
