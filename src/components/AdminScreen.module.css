@@ -1,0 +1,227 @@
+/* AdminScreen — token-gated table view of parse_events.
+   Mirrors SettingsScreen's chrome (header, back link, page width) so
+   the admin area reads as part of the same app, not a separate tool.
+   Slightly wider max-width (720) than settings (540) because the
+   tables benefit from horizontal breathing room. */
+
+.page {
+  padding: var(--s-6) var(--s-5) var(--s-12);
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--c-ink);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
+  margin-bottom: var(--s-6);
+}
+
+.back {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  color: var(--c-muted);
+  text-decoration: none;
+}
+
+.back:hover { color: var(--c-ink); }
+
+.title {
+  font-family: var(--ff-display);
+  font-size: 32px;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Header actions — small mono links on the far right, baseline-aligned
+   with the title. Refresh + lock. */
+.headerActions {
+  margin-left: auto;
+  display: flex;
+  gap: var(--s-3);
+}
+
+.headerLink {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--c-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.headerLink:hover:not(:disabled) { color: var(--c-ink); }
+.headerLink:disabled { opacity: 0.5; cursor: default; }
+
+/* Token gate */
+
+.intro {
+  font-family: var(--ff-display);
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--c-ink);
+  margin: 0 0 var(--s-6) 0;
+  letter-spacing: -0.005em;
+}
+
+.input {
+  width: 100%;
+  background: var(--c-rule);
+  border: 1px solid transparent;
+  border-radius: var(--r-3);
+  padding: var(--s-3);
+  font-family: var(--ff-mono);
+  font-size: 14px;
+  color: var(--c-ink);
+  margin-bottom: var(--s-3);
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--c-ink);
+}
+
+.btn {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 12px 18px;
+  border: 1px solid var(--c-ink);
+  background: var(--c-ink);
+  color: var(--c-paper);
+  border-radius: var(--r-3);
+  cursor: pointer;
+}
+
+.btn:disabled {
+  background: transparent;
+  border-color: var(--c-rule);
+  color: var(--c-muted);
+  cursor: not-allowed;
+}
+
+/* Sections — same heading pattern as SettingsScreen. */
+
+.section {
+  margin-bottom: var(--s-10);
+}
+
+.heading {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--c-muted);
+  margin: 0 0 var(--s-3) 0;
+}
+
+/* Summary line for the spend section — display serif so the headline
+   number ("X parses, $Y total") feels editorial rather than a metric
+   tile. */
+.summary {
+  font-family: var(--ff-display);
+  font-size: 17px;
+  color: var(--c-ink);
+  margin: 0 0 var(--s-4) 0;
+}
+
+.status, .empty {
+  font-family: var(--ff-body);
+  color: var(--c-muted);
+  margin: 0;
+  font-size: 13px;
+}
+
+.error {
+  font-family: var(--ff-display);
+  font-style: italic;
+  color: var(--c-ink);
+  margin: 0 0 var(--s-6) 0;
+}
+
+/* Tables — minimal hairlines, mono numerals so the columns align.
+   Numbers right-aligned by default; first column (label) left-aligned. */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ff-mono);
+  font-size: 12px;
+}
+
+.table th {
+  text-align: right;
+  font-weight: 400;
+  color: var(--c-muted);
+  padding: var(--s-2);
+  border-bottom: 1px solid var(--c-rule);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+}
+
+.table td {
+  text-align: right;
+  padding: var(--s-2);
+  border-bottom: 1px solid var(--c-rule);
+  color: var(--c-ink);
+}
+
+.table th:first-child,
+.table td:first-child {
+  text-align: left;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Recent feed — meta line in mono muted, transcript in body sans.
+   The transcript is the load-bearing thing on this page (it's what I
+   actually want to read), so it gets the larger, warmer typesetting. */
+
+.recent {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recentItem {
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--c-rule);
+}
+
+.recentItem:last-child { border-bottom: none; }
+
+.recentMeta {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--c-muted);
+  text-transform: lowercase;
+  margin-bottom: var(--s-1);
+}
+
+.recentTranscript {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  color: var(--c-ink);
+  line-height: 1.4;
+}
+
+.recentTranscript em {
+  color: var(--c-muted);
+  font-style: italic;
+}

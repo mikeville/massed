@@ -3,6 +3,7 @@ import { Route, Router, Switch, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import { useSessions } from './lib/useSessions';
 import { useGistSync } from './lib/useGistSync';
+import { AdminScreen } from './components/AdminScreen';
 import { CheckInScreen } from './components/CheckInScreen';
 import { LogScreen } from './components/LogScreen';
 import { SettingsScreen } from './components/SettingsScreen';
@@ -69,6 +70,9 @@ export function App() {
             <Route path="/settings">
               <SettingsScreen sync={sync} />
             </Route>
+            <Route path="/admin">
+              <AdminScreen />
+            </Route>
           </Switch>
         </div>
       </main>
@@ -101,9 +105,10 @@ const AFFORDANCE_FADE = { duration: 0.45, ease: 'easeInOut' } as const;
 
 function RouteAffordance() {
   const [location, setLocation] = useLocation();
-  /* Settings is URL-only and stands apart from the check-in / log loop;
-     suppressing the FAB there avoids a confusing third destination. */
-  if (location === '/settings') return null;
+  /* Settings and admin are URL-only and stand apart from the
+     check-in / log loop; suppressing the FAB there avoids a confusing
+     third destination. */
+  if (location === '/settings' || location === '/admin') return null;
   const isLog = location === '/log';
   const target = isLog ? '/' : '/log';
   const label = isLog ? 'back to check-in' : 'log a set';

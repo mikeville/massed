@@ -89,6 +89,15 @@
 
 .checkin__period-trigger:hover { background: var(--c-rule); }
 
+/* Reserve enough width for the longest deck label ("this month") so
+   the trigger doesn't reflow when the user switches to shorter values
+   like "today". Left-aligned so the caret stays put on the right. */
+.checkin__period-label {
+  display: inline-block;
+  min-width: 7em;
+  text-align: left;
+}
+
 .checkin__period-caret {
   font-size: 9px;
   line-height: 1;

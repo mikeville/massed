@@ -187,9 +187,14 @@
 @media (max-width: 560px) {
   /* Stay on one line. The family column collapses to just the chip
      (text hides); the exercise cell ellipsizes if it has to. Reps×wt
-     and end stay at the row's trailing edge. */
+     and end stay at the row's trailing edge.
+     The chip and end-button columns are pinned to fixed widths (rather
+     than auto) so the entry row — which renders no chip and no delete
+     button — reserves the same horizontal slots as populated rows and
+     its inputs line up with the rows above instead of shifting left
+     and right. */
   .row {
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-columns: 12px minmax(0, 1fr) auto 24px;
     grid-template-areas: "family exercise repswt end";
     column-gap: var(--s-2);
     padding: var(--s-3) 0;

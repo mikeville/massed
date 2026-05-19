@@ -2,6 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      /* Set <base href> at runtime so the bundle's relative asset
+         URLs (./assets/...) resolve correctly on any route, including
+         deep links served via the SPA fallback. Without this, visiting
+         /admin or /log directly would resolve ./assets/X.js to
+         /admin/assets/X.js — Netlify's catch-all returns index.html
+         for that path, the browser tries to execute HTML as a module,
+         and the app silently fails to mount.
+
+         Detects the /massed/ sub-path prefix used by the mikemake.com
+         proxy so the same bundle works at both the root Netlify deploy
+         and the proxied sub-path. */
+      (function () {
+        var m = location.pathname.match(/^\/massed(?:\/|$)/);
+        var base = document.createElement('base');
+        base.href = m ? '/massed/' : '/';
+        document.head.appendChild(base);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

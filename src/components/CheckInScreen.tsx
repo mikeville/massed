@@ -252,7 +252,7 @@ function PeriodMenu({
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <span>{PERIOD_DECK[value]}</span>
+        <span className={styles.checkinPeriodLabel}>{PERIOD_DECK[value]}</span>
         <span aria-hidden className={styles.checkinPeriodCaret}>▾</span>
       </button>
       {open && (

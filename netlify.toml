@@ -12,6 +12,13 @@ to = "/.netlify/functions/parse-workout"
 status = 200
 force = true
 
+# /api/admin-stats backs the in-app /admin dashboard.
+[[redirects]]
+from = "/api/admin-stats"
+to = "/.netlify/functions/admin-stats"
+status = 200
+force = true
+
 # SPA fallback — must remain last.
 [[redirects]]
 from = "/*"
