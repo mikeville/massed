@@ -1,0 +1,19 @@
+[build]
+command = "npm run build"
+publish = "dist"
+functions = "netlify/functions"
+
+# /api/parse-workout is the same path the Vite dev middleware serves.
+# status = 200 rewrites in place (preserves POST + body) rather than
+# 301-redirecting, so the client doesn't need a deploy-aware URL.
+[[redirects]]
+from = "/api/parse-workout"
+to = "/.netlify/functions/parse-workout"
+status = 200
+force = true
+
+# SPA fallback — must remain last.
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

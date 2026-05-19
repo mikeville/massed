@@ -96,6 +96,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const apiKey = env.ANTHROPIC_API_KEY ?? '';
   return {
+    // Relative so built asset URLs resolve under any deploy prefix
+    // (root, or a proxied sub-path).
+    base: './',
     plugins: [react(), parseWorkoutDevPlugin(apiKey)],
     server: { port: 5173 },
     css: {

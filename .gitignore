@@ -6,6 +6,11 @@ dist
 .env.local
 *.tsbuildinfo
 
+# tsc -b emits .js/.d.ts next to vite.config.ts (composite project).
+# We don't ship those; the source .ts is the only canonical version.
+vite.config.js
+vite.config.d.ts
+
 # pipeline reports — internal only, do not publish
 FORK_REPORT.md
 SANITIZATION_REPORT.md

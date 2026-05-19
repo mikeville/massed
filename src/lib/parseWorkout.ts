@@ -20,7 +20,12 @@ export interface ParsedWorkout {
 }
 
 export async function parseWorkout(transcript: string): Promise<ParsedWorkout> {
-  const res = await fetch('/api/parse-workout', {
+  // Relative path (no leading slash) so the request resolves under
+  // whatever prefix the page was served at — root for a standalone
+  // deploy, or a sub-path when this app is proxied beneath another
+  // site. Assumes flat routes (one path segment after the prefix);
+  // deeper nesting would need an explicit anchor to the app root.
+  const res = await fetch('api/parse-workout', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ transcript }),
