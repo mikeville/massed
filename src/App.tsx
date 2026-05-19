@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Route, Switch, useLocation } from 'wouter';
+import { Route, Router, Switch, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import { useSessions } from './lib/useSessions';
 import { useGistSync } from './lib/useGistSync';
@@ -42,33 +42,46 @@ export function App() {
   const fact = useStableFact(period, total);
 
   return (
-    <main className={styles.app}>
-      <div className={styles.appColumn}>
-        <RouteAffordance />
-        <Switch>
-          <Route path="/">
-            <CheckInScreen
-              sessions={sessions}
-              period={period}
-              onPeriodChange={setPeriod}
-              fact={fact}
-              onUpdateSet={updateSet}
-              onDeleteSet={deleteSet}
-              onRestoreSet={restoreSet}
-              onResetData={resetToSeed}
-            />
-          </Route>
-          <Route path="/log">
-            <LogScreen sessions={sessions} onSave={addSet} />
-          </Route>
-          <Route path="/settings">
-            <SettingsScreen sync={sync} />
-          </Route>
-        </Switch>
-      </div>
-    </main>
+    <Router base={ROUTER_BASE}>
+      <main className={styles.app}>
+        <div className={styles.appColumn}>
+          <RouteAffordance />
+          <Switch>
+            <Route path="/">
+              <CheckInScreen
+                sessions={sessions}
+                period={period}
+                onPeriodChange={setPeriod}
+                fact={fact}
+                onUpdateSet={updateSet}
+                onDeleteSet={deleteSet}
+                onRestoreSet={restoreSet}
+                onResetData={resetToSeed}
+              />
+            </Route>
+            <Route path="/log">
+              <LogScreen sessions={sessions} onSave={addSet} />
+            </Route>
+            <Route path="/settings">
+              <SettingsScreen sync={sync} />
+            </Route>
+          </Switch>
+        </div>
+      </main>
+    </Router>
   );
 }
+
+/* When this app is served as a sub-path of another site (e.g.
+   /massed/), Wouter needs to strip that prefix so the route patterns
+   below stay rooted at "/". Detected at runtime from the page URL,
+   not build-time, because the same bundle serves both contexts —
+   standalone (root) and proxied (sub-path). */
+const ROUTER_BASE = (() => {
+  if (typeof window === 'undefined') return '';
+  const m = window.location.pathname.match(/^\/massed(?=\/|$)/);
+  return m ? m[0] : '';
+})();
 
 /* RouteAffordance — one element that lives across route changes so the
    masthead never sees an unmount/remount flicker. On `/` it reads as
