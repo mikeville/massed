@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs>
+    <pattern id="pA" patternUnits="userSpaceOnUse" width="1.6" height="1.6" patternTransform="rotate(-45)">
+      <line x1="0" y1="0" x2="0" y2="1.6" stroke="#14130f" stroke-width="0.9"/>
+    </pattern>
+    <pattern id="pB" patternUnits="userSpaceOnUse" width="3.6" height="3.6" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="3.6" stroke="#14130f" stroke-width="1"/>
+    </pattern>
+    <clipPath id="zA"><rect x="2" y="2" width="4.5" height="12" rx="0.5" ry="0.5"/></clipPath>
+    <clipPath id="zB"><rect x="9.5" y="2" width="4.5" height="12" rx="0.5" ry="0.5"/></clipPath>
+  </defs>
+  <rect x="0.5" y="0.5" width="15" height="15" rx="2" ry="2" fill="#faecec" stroke="#14130f" stroke-width="1"/>
+  <line x1="8" y1="0.5" x2="8" y2="15.5" stroke="#14130f" stroke-width="1"/>
+  <rect x="0" y="0" width="16" height="16" fill="url(#pA)" clip-path="url(#zA)"/>
+  <rect x="0" y="0" width="16" height="16" fill="url(#pB)" clip-path="url(#zB)"/>
+</svg>
