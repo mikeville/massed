@@ -13,13 +13,40 @@
 
 /* Masthead row — min-height + padding-right mirror .checkin__top so the
    title centers on the same vertical axis as the route affordance,
-   which is absolutely positioned at the App level. */
+   which is absolutely positioned at the App level. The right-padding
+   reservation now also clears the gear icon that sits between the
+   title and the route affordance. */
 .log__top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   min-height: 36px;
-  padding-right: 48px;
+  padding-right: 96px;
+}
+
+/* Gear → /settings. Absolute, anchored to the LogScreen's right edge so
+   it lines up with the route affordance (which is also right-anchored,
+   one layer up in App). The numeric offset is the affordance width
+   (36px) + a small gap. Vertical centering matches the affordance. */
+.log__gear {
+  position: absolute;
+  top: 28px;
+  right: 80px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-muted);
+  text-decoration: none;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+
+.log__gear:hover {
+  color: var(--c-ink);
+  background: var(--c-rule);
 }
 
 .log__issue {
@@ -73,4 +100,6 @@
 
 @media (max-width: 560px) {
   .log { padding: 22px 16px 28px; }
+  .log__top { padding-right: 80px; }
+  .log__gear { top: 22px; right: 60px; }
 }

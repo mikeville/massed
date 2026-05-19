@@ -13,12 +13,18 @@ import styles from './SettingsScreen.module.css';
      one. The user never thinks about a "gist id".
    - connected → status, push/pull, disconnect. */
 
-// Pre-fills the classic-PAT form: name = "massed", scope = gist.
-// Classic tokens are deprecated-but-supported by GitHub; chosen here
-// because the fine-grained equivalent can't pre-select the gists
-// permission and would re-introduce the multi-step friction.
+// Pre-fills the fine-grained PAT form with everything that matters:
+// name, description, no-expiration, and the single permission this app
+// needs (gists: read & write). GitHub added these URL params in
+// August 2025; before that we had to use classic tokens to get any
+// pre-fill at all. With this URL the user only has to tap "generate
+// token" and copy — no checkbox hunting, no permission menus.
 const TOKEN_URL =
-  'https://github.com/settings/tokens/new?scopes=gist&description=massed';
+  'https://github.com/settings/personal-access-tokens/new' +
+  '?name=massed' +
+  '&description=massed+workout+data' +
+  '&expires_in=none' +
+  '&gists=write';
 
 export interface SettingsScreenProps {
   sync: UseGistSync;
@@ -96,11 +102,10 @@ function NotConnected({ sync }: { sync: UseGistSync }) {
       <section className={styles.step}>
         <h2 className={styles.heading}>1. get a token</h2>
         <p className={styles.copy}>
-          this is a key from github that lets massed read and write that
-          one file. the link below pre-fills the right name and
-          permission — on the github page, scroll past the expiration
-          field and tap <em>generate token</em>, then copy what it shows
-          you.
+          this is a key from github that lets massed read and write
+          that one file. the link below pre-fills everything — on the
+          github page, scroll down and tap <em>generate token</em>,
+          then copy what it shows you.
         </p>
         <a
           className={styles.linkBtn}
@@ -121,7 +126,7 @@ function NotConnected({ sync }: { sync: UseGistSync }) {
             setPat(e.target.value);
             setError(null);
           }}
-          placeholder="ghp_… or github_pat_…"
+          placeholder="github_pat_…"
           spellCheck={false}
           autoCapitalize="none"
           autoCorrect="off"

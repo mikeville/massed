@@ -10,9 +10,20 @@ import { EditLedger } from './EditLedger';
 
 export interface ManualLogScreenProps {
   sessions: Session[];
+  syncConfigured: boolean;
   onSave: (date: string, exerciseName: string, family: Family, set: SetEntry) => void;
 }
 
-export function ManualLogScreen({ sessions, onSave }: ManualLogScreenProps) {
-  return <EditLedger sessions={sessions} onSave={onSave} />;
+export function ManualLogScreen({
+  sessions,
+  syncConfigured,
+  onSave,
+}: ManualLogScreenProps) {
+  return (
+    <EditLedger
+      sessions={sessions}
+      syncConfigured={syncConfigured}
+      onSave={onSave}
+    />
+  );
 }

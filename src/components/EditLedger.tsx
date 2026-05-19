@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import type { Family, Session, SetEntry } from '../lib/types';
 import { inferFamily } from '../lib/family-lookup';
 import { formatDateHeader, todayISO } from '../lib/format-date';
@@ -53,6 +53,11 @@ export interface EditLedgerProps {
   initialDrafts?: Draft[];
   /** Optional secondary action (e.g. voice mode's "back to mic"). */
   secondary?: { label: string; onClick: () => void };
+  /** When false and the ledger has any content, a quiet hint surfaces
+      directing the user to set up sync. Coming from a place where they
+      see "I am about to leave my own data in someone else's prototype
+      browser" is the right moment to flag it. */
+  syncConfigured: boolean;
 }
 
 export function EditLedger({
@@ -60,6 +65,7 @@ export function EditLedger({
   onSave,
   initialDrafts,
   secondary,
+  syncConfigured,
 }: EditLedgerProps) {
   const [, setLocation] = useLocation();
   const [selectedDate, setSelectedDate] = useState<string>(todayISO());
@@ -200,11 +206,24 @@ export function EditLedger({
   // the `max` attribute simply nudges the native picker's wheel.
   const todayMax = todayISO();
 
+  // The hint only appears once the user has signaled intent to log
+  // (drafts present from a parse, or a partial manual entry). It also
+  // suppresses itself once sync is wired up — at that point this
+  // device is no longer the only copy.
+  const showSyncHint = !syncConfigured && hasContent;
+
   return (
     <div className={styles.ledger}>
       <DateRow value={selectedDate} max={todayMax} onChange={setSelectedDate} />
 
       <HeaderRow />
+
+      {showSyncHint && (
+        <Link href="/settings" className={styles.syncHint}>
+          these sets save to this browser only.{' '}
+          <span className={styles.syncHintAction}>set up sync →</span>
+        </Link>
+      )}
 
       {savedForDate && savedForDate.exercises.length > 0 && (
         <section className={styles.zone}>

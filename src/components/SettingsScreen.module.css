@@ -1,6 +1,12 @@
-/* SettingsScreen — single-column form for gist sync config + actions.
-   URL-only route, not linked from main app chrome. Mobile-first; the
-   wider desktop view just gets a centered max-width column. */
+/* SettingsScreen — wizard for first-time connect, status panel once
+   connected. Mobile-first; the wider desktop view just gets a centered
+   max-width column.
+
+   Visual rhythm goal: feel less like a config panel and more like a
+   short editorial walkthrough. The intro paragraph carries the
+   "your data, your file" framing in display serif; the two numbered
+   steps below borrow the section heading style used elsewhere in the
+   app so the chrome stays consistent. */
 
 .page {
   padding: var(--s-6) var(--s-5) var(--s-12);
@@ -36,27 +42,56 @@
   letter-spacing: -0.01em;
 }
 
+/* Intro paragraph — display serif at a comfortable reading size,
+   carries the value framing on first arrival. Italic <em> picks up
+   automatically. */
+.intro {
+  font-family: var(--ff-display);
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--c-ink);
+  margin: 0 0 var(--s-8) 0;
+  letter-spacing: -0.005em;
+}
+
+.intro em { font-style: italic; }
+
+/* A numbered step section. The heading sits in mono caps like other
+   section labels in the app; copy below sits in body sans. */
+.step {
+  margin-bottom: var(--s-8);
+}
+
+/* The plain "actions" / status sections in the connected view reuse
+   the bottom margin without the numbered heading style. */
 .section {
   margin-bottom: var(--s-8);
 }
 
 .heading {
-  font-family: var(--ff-body);
+  font-family: var(--ff-mono);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   color: var(--c-muted);
   margin: 0 0 var(--s-3) 0;
 }
 
-.status {
-  font-family: var(--ff-body);
+.copy {
+  margin: 0 0 var(--s-4) 0;
   font-size: 14px;
+  line-height: 1.55;
   color: var(--c-ink);
 }
 
-.statusError { color: var(--c-ink); }
+.copy em { font-style: italic; }
+
+.status {
+  font-family: var(--ff-body);
+  font-size: 15px;
+  color: var(--c-ink);
+}
 
 .statusMeta {
   font-family: var(--ff-mono);
@@ -65,28 +100,23 @@
   margin-top: var(--s-1);
 }
 
-.statusMeta code { font-family: inherit; }
-
-.field {
-  display: block;
-  margin-bottom: var(--s-3);
-}
-
-.label {
-  display: block;
-  font-size: 12px;
+.statusMeta a {
   color: var(--c-muted);
-  margin-bottom: var(--s-1);
+  text-decoration: none;
+  border-bottom: 1px solid var(--c-rule);
 }
+
+.statusMeta a:hover { color: var(--c-ink); border-bottom-color: var(--c-ink); }
+.statusMeta code { font-family: inherit; }
 
 .input {
   width: 100%;
   background: var(--c-rule);
   border: 1px solid transparent;
   border-radius: var(--r-3);
-  padding: var(--s-2) var(--s-3);
+  padding: var(--s-3);
   font-family: var(--ff-mono);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--c-ink);
   -webkit-appearance: none;
   appearance: none;
@@ -111,9 +141,11 @@
 }
 
 .btn {
-  font-family: var(--ff-body);
-  font-size: 13px;
-  padding: var(--s-2) var(--s-4);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 12px 18px;
   border: 1px solid var(--c-ink);
   background: transparent;
   color: var(--c-ink);
@@ -138,7 +170,7 @@
 .btnPrimary:hover:not(:disabled) { opacity: 0.85; }
 
 .btnPrimary:disabled {
-  background: var(--c-rule);
+  background: transparent;
   border-color: var(--c-rule);
   color: var(--c-muted);
 }
@@ -153,41 +185,47 @@
   background: var(--c-rule);
 }
 
-.testResult {
+/* Wide CTA — fills the row width. Used for the marquee "connect"
+   button so it reads as the obvious next move on the screen. */
+.btnWide {
+  display: block;
+  width: 100%;
   margin-top: var(--s-3);
+  padding: 14px 0;
+  text-align: center;
+}
+
+/* Anchor styled as a button — the "open github" link. Same chrome as
+   .btn so the wizard's two affordances (open / connect) feel paired,
+   but with target="_blank" semantics. */
+.linkBtn {
+  display: inline-block;
   font-family: var(--ff-mono);
-  font-size: 12px;
-  color: var(--c-muted);
-}
-
-.steps {
-  margin: 0;
-  padding-left: var(--s-4);
-  font-size: 13px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 12px 18px;
+  border: 1px solid var(--c-ink);
+  background: transparent;
   color: var(--c-ink);
-  line-height: 1.65;
+  border-radius: var(--r-3);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.steps li { margin-bottom: var(--s-3); }
-.steps li::marker { color: var(--c-muted); }
+.linkBtn:hover { background: var(--c-rule); }
 
-.steps a {
+.error {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 14px;
   color: var(--c-ink);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.steps code {
-  font-family: var(--ff-mono);
-  font-size: 12px;
-  background: var(--c-rule);
-  padding: 1px 4px;
-  border-radius: var(--r-2);
+  margin: var(--s-3) 0 0 0;
 }
 
 .note {
   margin: var(--s-4) 0 0 0;
   font-size: 12px;
+  line-height: 1.5;
   color: var(--c-muted);
-  font-style: italic;
 }

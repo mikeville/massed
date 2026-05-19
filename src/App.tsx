@@ -60,7 +60,11 @@ export function App() {
               />
             </Route>
             <Route path="/log">
-              <LogScreen sessions={sessions} onSave={addSet} />
+              <LogScreen
+                sessions={sessions}
+                syncConfigured={sync.config !== null}
+                onSave={addSet}
+              />
             </Route>
             <Route path="/settings">
               <SettingsScreen sync={sync} />

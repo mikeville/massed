@@ -4,8 +4,6 @@ import {
   fetchGist,
   findOrCreateGist,
   formatGistError,
-  parseGistInput,
-  probeGist,
   pushGist,
   type GistConfig,
 } from './gistSync';
@@ -47,19 +45,14 @@ export interface UseGistSync {
   config: GistConfig | null;
   status: SyncStatus;
   lastSyncedAt: string | null;
-  saveConfig: (input: { gistInput: string; pat: string }) => void;
-  clearConfig: () => void;
-  pushNow: () => Promise<void>;
-  pullNow: () => Promise<{ ok: true } | { ok: false; error: string }>;
-  testConnection: (input: {
-    gistInput: string;
-    pat: string;
-  }) => Promise<{ ok: true } | { ok: false; error: string }>;
   /** One-shot connect: take a token, find or create a massed.json gist,
       persist the config. The "gist id" never crosses the UI. */
   connectWithToken: (
     pat: string,
   ) => Promise<{ ok: true } | { ok: false; error: string }>;
+  clearConfig: () => void;
+  pushNow: () => Promise<void>;
+  pullNow: () => Promise<{ ok: true } | { ok: false; error: string }>;
 }
 
 function loadConfig(): GistConfig | null {
@@ -138,19 +131,6 @@ export function useGistSync(
     }, DEBOUNCE_MS);
   }, [sessions, doPush]);
 
-  const saveConfig: UseGistSync['saveConfig'] = useCallback(
-    ({ gistInput, pat }) => {
-      const next: GistConfig = {
-        gistId: parseGistInput(gistInput),
-        pat: pat.trim(),
-      };
-      localStorage.setItem(CONFIG_KEY, JSON.stringify(next));
-      setConfig(next);
-      setStatus({ kind: 'idle' });
-    },
-    [],
-  );
-
   const clearConfig: UseGistSync['clearConfig'] = useCallback(() => {
     localStorage.removeItem(CONFIG_KEY);
     localStorage.removeItem(LAST_SYNCED_KEY);
@@ -197,22 +177,6 @@ export function useGistSync(
     }
   }, [setSessions]);
 
-  const testConnection: UseGistSync['testConnection'] = useCallback(
-    async ({ gistInput, pat }) => {
-      const trial: GistConfig = {
-        gistId: parseGistInput(gistInput),
-        pat: pat.trim(),
-      };
-      try {
-        await probeGist(trial);
-        return { ok: true as const };
-      } catch (e) {
-        return { ok: false as const, error: formatGistError(e) };
-      }
-    },
-    [],
-  );
-
   const connectWithToken: UseGistSync['connectWithToken'] = useCallback(
     async (pat) => {
       const trimmed = pat.trim();
@@ -256,11 +220,9 @@ export function useGistSync(
     config,
     status,
     lastSyncedAt,
-    saveConfig,
+    connectWithToken,
     clearConfig,
     pushNow,
     pullNow,
-    testConnection,
-    connectWithToken,
   };
 }

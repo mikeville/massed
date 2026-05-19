@@ -20,14 +20,6 @@ export interface GistError {
   message: string;
 }
 
-/** Accept a full gist URL or a bare ID. Strips the user-segment if present. */
-export function parseGistInput(input: string): string {
-  const trimmed = input.trim();
-  const urlMatch = trimmed.match(/gist\.github\.com\/(?:[^/]+\/)?([a-f0-9]+)/i);
-  if (urlMatch) return urlMatch[1];
-  return trimmed;
-}
-
 async function gistFetch(path: string, init: RequestInit, pat: string): Promise<Response> {
   const res = await fetch(`${GIST_API}${path}`, {
     ...init,
@@ -102,17 +94,6 @@ export async function pushGist(config: GistConfig, sessions: Session[]): Promise
       headers: { 'Content-Type': 'application/json' },
       body,
     },
-    config.pat,
-  );
-}
-
-/* Lightweight existence/auth probe used by the "test connection" button.
-   Returns success without parsing the file — a gist with no massed.json
-   is still a valid target (push will create it). */
-export async function probeGist(config: GistConfig): Promise<void> {
-  await gistFetch(
-    `/${encodeURIComponent(config.gistId)}`,
-    { method: 'GET' },
     config.pat,
   );
 }

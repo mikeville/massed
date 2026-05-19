@@ -89,6 +89,31 @@
 .header-end      { grid-area: end; }
 .header-x        { color: var(--c-muted); }
 
+/* Inline sync hint — appears once the user has anything in the ledger
+   and sync isn't wired up yet. Quiet by default (rule-colored bg,
+   muted body) so it doesn't compete with the table; the "set up sync"
+   trailing phrase gets the ink weight to read as the action. */
+.sync-hint {
+  display: block;
+  padding: 10px 12px;
+  background: var(--c-rule);
+  border-radius: var(--r-3);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-muted);
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.sync-hint:hover { color: var(--c-ink); }
+
+.sync-hint-action {
+  color: var(--c-ink);
+  white-space: nowrap;
+}
+
 .zone {
   display: flex;
   flex-direction: column;

@@ -16,10 +16,15 @@ import { EditLedger } from './EditLedger';
 
 export interface VoiceLogScreenProps {
   sessions: Session[];
+  syncConfigured: boolean;
   onSave: (date: string, exerciseName: string, family: Family, set: SetEntry) => void;
 }
 
-export function VoiceLogScreen({ sessions, onSave }: VoiceLogScreenProps) {
+export function VoiceLogScreen({
+  sessions,
+  syncConfigured,
+  onSave,
+}: VoiceLogScreenProps) {
   const [parsed, setParsed] = useState<ParsedRow[] | null>(null);
 
   if (parsed === null) {
@@ -29,6 +34,7 @@ export function VoiceLogScreen({ sessions, onSave }: VoiceLogScreenProps) {
   return (
     <EditLedger
       sessions={sessions}
+      syncConfigured={syncConfigured}
       onSave={onSave}
       initialDrafts={parsed.map((r) => ({
         exercise: r.name,
