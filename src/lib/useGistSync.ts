@@ -15,19 +15,23 @@ import {
      massed:gist:config        { gistId, pat }
      massed:gist:lastSyncedAt  ISO timestamp of the last successful push
                                or pull
-     massed:gist:hasPulled     '1' once we've ever pulled — flag is
-                                reserved for future "auto-pull on cold
-                                start with empty local" UX; not used by
-                                the hook itself yet
+     massed:gist:hasPulled     '1' once we've ever pulled; written by
+                                pullNow, currently unused for branching
 
    Auto-push: any change to `sessions` schedules a 5s debounced PATCH.
    The mount render is suppressed via a ref so hydration doesn't trigger
    a spurious push.
 
+   Auto-pull: fires on (a) cold mount when sync is already configured,
+   and (b) every tab-becomes-visible transition. Lets edits made on one
+   device reach the others without a manual "pull from github" click.
+   Gated on no pending push so we never clobber a queued local change.
+
    Race policy: pushes are fire-and-forget. If two pushes overlap on the
    network, GitHub processes them last-write-wins by completion order;
-   any drift self-corrects on the next change. Acceptable for a
-   personal, single-device tool. */
+   any drift self-corrects on the next change. The narrow window where
+   an auto-pull arrives between a local edit and its 5s push can lose
+   that edit — accepted trade-off for a personal cross-device tool. */
 
 const CONFIG_KEY = 'massed:gist:config';
 const LAST_SYNCED_KEY = 'massed:gist:lastSyncedAt';
@@ -181,6 +185,34 @@ export function useGistSync(
       return { ok: false as const, error };
     }
   }, [setSessions]);
+
+  /* Auto-pull on cold mount when sync is already configured. Catches
+     the cross-device case: edit on phone, refresh desktop, see the
+     edit without having to manually click pull. Safe at mount because
+     the auto-push effect's first run is suppressed (suppressNextRef
+     starts true) — there is no pending push to clobber. */
+  useEffect(() => {
+    if (!configRef.current) return;
+    void pullNow();
+    // pullNow is stable via useCallback; mount-only fire by design.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* Auto-pull when the tab returns to the foreground. Same intent as
+     mount-pull but for the long-lived-tab case: desktop open all day,
+     edits made on phone, switch back to desktop tab → fresh data
+     without a manual pull. Gated on `timerRef` so we never clobber a
+     locally-pending push. */
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState !== 'visible') return;
+      if (!configRef.current) return;
+      if (timerRef.current !== null) return;
+      void pullNow();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [pullNow]);
 
   const connectWithToken: UseGistSync['connectWithToken'] = useCallback(
     async (pat) => {
