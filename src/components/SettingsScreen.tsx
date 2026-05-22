@@ -69,7 +69,10 @@ export function SettingsScreen({ sync }: SettingsScreenProps) {
         <Link href="/" className={styles.back}>
           ← back
         </Link>
-        <h1 className={styles.title}>sync</h1>
+        {/* Title swaps with state: setup framing before connect, ownership
+            framing after. Using "log" instead of "sync" keeps the focus on
+            what the user gets (their workout record), not the mechanism. */}
+        <h1 className={styles.title}>{config ? 'your log' : 'set up your log'}</h1>
       </header>
 
       {config ? <Connected sync={sync} /> : <NotConnected sync={sync} />}
@@ -93,10 +96,11 @@ function NotConnected({ sync }: { sync: UseGistSync }) {
   return (
     <>
       <p className={styles.intro}>
-        this browser is the only place your workouts exist. set up sync
-        and they live in a private file on your{' '}
-        <em>own</em> github — your data, your file, no server in the
-        middle.
+        your workouts in a private file on your{' '}
+        <em>own</em> github — your data, your file, no server in between.
+      </p>
+      <p className={styles.sub}>
+        right now this browser is the only place your sets exist.
       </p>
 
       <section className={styles.step}>

@@ -76,6 +76,7 @@ function loadConfig(): GistConfig | null {
 export function useGistSync(
   sessions: Session[],
   setSessions: (s: Session[]) => void,
+  seedActive: boolean,
 ): UseGistSync {
   const [config, setConfig] = useState<GistConfig | null>(() => loadConfig());
   const [status, setStatus] = useState<SyncStatus>({ kind: 'idle' });
@@ -87,12 +88,16 @@ export function useGistSync(
      re-creating the timer effect on every render. */
   const sessionsRef = useRef(sessions);
   const configRef = useRef(config);
+  const seedActiveRef = useRef(seedActive);
   useEffect(() => {
     sessionsRef.current = sessions;
   }, [sessions]);
   useEffect(() => {
     configRef.current = config;
   }, [config]);
+  useEffect(() => {
+    seedActiveRef.current = seedActive;
+  }, [seedActive]);
 
   const timerRef = useRef<number | null>(null);
   /* Skip the first sessions effect after mount so localStorage hydration
@@ -185,9 +190,15 @@ export function useGistSync(
       }
       setStatus({ kind: 'syncing' });
       try {
+        /* Capture seed state before async work — if the user is still on
+           untouched demo data, the new gist should be born empty and
+           local should drop the seed too. Real user-typed data (seed
+           already consumed) is preserved and pushed up as-is. */
+        const wasSeedActive = seedActiveRef.current;
+        const sessionsToSeed = wasSeedActive ? [] : sessionsRef.current;
         const { gistId, created } = await findOrCreateGist(
           trimmed,
-          sessionsRef.current,
+          sessionsToSeed,
         );
         const next: GistConfig = { gistId, pat: trimmed };
         localStorage.setItem(CONFIG_KEY, JSON.stringify(next));
@@ -201,6 +212,11 @@ export function useGistSync(
           suppressNextRef.current = true;
           setSessions(remote);
           localStorage.setItem(HAS_PULLED_KEY, '1');
+        } else if (wasSeedActive) {
+          // Brand-new gist for a brand-new user — clear local so the
+          // demo data doesn't linger after the first sync confirmation.
+          suppressNextRef.current = true;
+          setSessions([]);
         }
         const at = new Date().toISOString();
         localStorage.setItem(LAST_SYNCED_KEY, at);

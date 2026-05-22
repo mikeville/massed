@@ -44,17 +44,29 @@
 
 /* Intro paragraph — display serif at a comfortable reading size,
    carries the value framing on first arrival. Italic <em> picks up
-   automatically. */
+   automatically. Bottom margin is tight so the .sub line below reads
+   as part of the same lede. */
 .intro {
   font-family: var(--ff-display);
   font-size: 19px;
   line-height: 1.45;
   color: var(--c-ink);
-  margin: 0 0 var(--s-8) 0;
+  margin: 0 0 var(--s-2) 0;
   letter-spacing: -0.005em;
 }
 
 .intro em { font-style: italic; }
+
+/* Subline — the "right now this browser..." caveat. Smaller, muted body
+   sans so the headline above stays the dominant statement. Carries the
+   bottom margin that used to live on .intro. */
+.sub {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--c-muted);
+  margin: 0 0 var(--s-8) 0;
+}
 
 /* A numbered step section. The heading sits in mono caps like other
    section labels in the app; copy below sits in body sans. */

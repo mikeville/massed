@@ -3,6 +3,11 @@ import type { ExerciseEntry, Family, Session, SetEntry } from './types';
 import { SEED_SESSIONS } from '../data/seed';
 
 const STORAGE_KEY = 'massed:sessions:v2';
+/* Set to '1' on the cold load that fell back to SEED_SESSIONS, cleared
+   on the first real user mutation. Lets the sync layer know whether the
+   currently-local data is still untouched demo content — so a brand-new
+   user wiring up their gist doesn't push the seed up as canonical. */
+const SEED_FLAG_KEY = 'massed:seed-active:v1';
 
 /**
  * useSessions — single read/write surface for the prototype's session log.
@@ -26,6 +31,9 @@ export function useSessions(): {
   restoreSet: (date: string, flatIndex: number, row: FlatSet) => void;
   resetToSeed: () => void;
   clearAll: () => void;
+  /** True while the visible log is untouched seed data. Flips false on
+      the first user mutation; flips true again after `resetToSeed`. */
+  seedActive: boolean;
 } {
   const [sessions, setSessionsState] = useState<Session[]>(() => {
     try {
@@ -39,6 +47,28 @@ export function useSessions(): {
     }
     return SEED_SESSIONS;
   });
+
+  const [seedActive, setSeedActiveState] = useState<boolean>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        // First cold load — seed is about to populate. Flag it so a
+        // reload before any edit still reads as seed-active.
+        localStorage.setItem(SEED_FLAG_KEY, '1');
+        return true;
+      }
+      return localStorage.getItem(SEED_FLAG_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  // Clears the seed flag on first user mutation. No-op once consumed.
+  function consumeSeed() {
+    if (!seedActive) return;
+    try { localStorage.removeItem(SEED_FLAG_KEY); } catch { /* ignore */ }
+    setSeedActiveState(false);
+  }
 
   useEffect(() => {
     try {
@@ -62,6 +92,7 @@ export function useSessions(): {
    * `inferFamily` returns null.
    */
   function addSet(date: string, exerciseName: string, family: Family, set: SetEntry) {
+    consumeSeed();
     setSessionsState((prev) => {
       const next = prev.map((s) => ({
         ...s,
@@ -98,6 +129,7 @@ export function useSessions(): {
    * what addSet would produce.
    */
   function updateSet(date: string, flatIndex: number, patch: FlatSetPatch) {
+    consumeSeed();
     setSessionsState((prev) => applyFlatMutation(prev, date, (flat) => {
       if (flatIndex < 0 || flatIndex >= flat.length) return flat;
       const next = flat.slice();
@@ -112,6 +144,7 @@ export function useSessions(): {
    * with no rows under it.
    */
   function deleteSet(date: string, flatIndex: number) {
+    consumeSeed();
     setSessionsState((prev) => applyFlatMutation(prev, date, (flat) => {
       if (flatIndex < 0 || flatIndex >= flat.length) return flat;
       return flat.slice(0, flatIndex).concat(flat.slice(flatIndex + 1));
@@ -126,6 +159,7 @@ export function useSessions(): {
    * deletions still lands somewhere sensible.
    */
   function restoreSet(date: string, flatIndex: number, row: FlatSet) {
+    consumeSeed();
     setSessionsState((prev) => {
       const next = prev.slice();
       const existingIdx = next.findIndex((s) => s.date === date);
@@ -145,17 +179,35 @@ export function useSessions(): {
 
   return {
     sessions,
-    setSessions: setSessionsState,
-    addSession: (s) =>
+    /* External setSessions — used by gist pull to overwrite local with
+       remote canonical data. Either way the visible log stops being
+       untouched seed, so consume the flag. */
+    setSessions: (s) => {
+      consumeSeed();
+      setSessionsState(s);
+    },
+    addSession: (s) => {
+      consumeSeed();
       setSessionsState((prev) =>
         [...prev, s].sort((a, b) => a.date.localeCompare(b.date))
-      ),
+      );
+    },
     addSet,
     updateSet,
     deleteSet,
     restoreSet,
-    resetToSeed: () => setSessionsState(SEED_SESSIONS),
-    clearAll: () => setSessionsState([]),
+    /* Re-arms the seed flag — the user deliberately put seed back, so
+       any subsequent fresh gist-create should still treat it as demo. */
+    resetToSeed: () => {
+      try { localStorage.setItem(SEED_FLAG_KEY, '1'); } catch { /* ignore */ }
+      setSeedActiveState(true);
+      setSessionsState(SEED_SESSIONS);
+    },
+    clearAll: () => {
+      consumeSeed();
+      setSessionsState([]);
+    },
+    seedActive,
   };
 }
 

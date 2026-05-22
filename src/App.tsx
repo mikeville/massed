@@ -27,9 +27,17 @@ function pickInitialPeriod(sessions: Session[]): Period {
 }
 
 export function App() {
-  const { sessions, setSessions, addSet, updateSet, deleteSet, restoreSet, resetToSeed } =
-    useSessions();
-  const sync = useGistSync(sessions, setSessions);
+  const {
+    sessions,
+    setSessions,
+    addSet,
+    updateSet,
+    deleteSet,
+    restoreSet,
+    resetToSeed,
+    seedActive,
+  } = useSessions();
+  const sync = useGistSync(sessions, setSessions, seedActive);
   const [period, setPeriod] = useState<Period>(() => pickInitialPeriod(sessions));
 
   const total = useMemo(
@@ -64,6 +72,7 @@ export function App() {
               <LogScreen
                 sessions={sessions}
                 syncConfigured={sync.config !== null}
+                seedActive={seedActive}
                 onSave={addSet}
               />
             </Route>

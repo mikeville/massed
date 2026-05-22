@@ -58,6 +58,10 @@ export interface EditLedgerProps {
       see "I am about to leave my own data in someone else's prototype
       browser" is the right moment to flag it. */
   syncConfigured: boolean;
+  /** True while the visible log is untouched demo data. The hint reframes
+      around "this app is in demo mode" so a fresh visitor reads it as "make this
+      app mine" rather than "back up my data". */
+  seedActive: boolean;
 }
 
 export function EditLedger({
@@ -66,6 +70,7 @@ export function EditLedger({
   initialDrafts,
   secondary,
   syncConfigured,
+  seedActive,
 }: EditLedgerProps) {
   const [, setLocation] = useLocation();
   const [selectedDate, setSelectedDate] = useState<string>(todayISO());
@@ -218,13 +223,6 @@ export function EditLedger({
 
       <HeaderRow />
 
-      {showSyncHint && (
-        <Link href="/settings" className={styles.syncHint}>
-          these sets save to this browser only.{' '}
-          <span className={styles.syncHintAction}>set up sync →</span>
-        </Link>
-      )}
-
       {savedForDate && savedForDate.exercises.length > 0 && (
         <section className={styles.zone}>
           <p className={styles.zoneLabel}>
@@ -299,6 +297,24 @@ export function EditLedger({
           />
         </div>
       </section>
+
+      {showSyncHint && (
+        <Link href="/settings" className={styles.syncHint}>
+          {seedActive ? (
+            <>
+              This app is in demo mode.{' '}
+              <span className={styles.syncHintAction}>
+                Set up your own log to save your workouts →
+              </span>
+            </>
+          ) : (
+            <>
+              Your data only lives in this browser for now.{' '}
+              <span className={styles.syncHintAction}>Set up your log to save your workouts →</span>
+            </>
+          )}
+        </Link>
+      )}
 
       {error && <p className={styles.error}>{error}</p>}
 

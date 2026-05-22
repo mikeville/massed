@@ -26,10 +26,11 @@ type Mode = 'voice' | 'manual';
 export interface LogScreenProps {
   sessions: Session[];
   syncConfigured: boolean;
+  seedActive: boolean;
   onSave: (date: string, exerciseName: string, family: Family, set: SetEntry) => void;
 }
 
-export function LogScreen({ sessions, syncConfigured, onSave }: LogScreenProps) {
+export function LogScreen({ sessions, syncConfigured, seedActive, onSave }: LogScreenProps) {
   const [mode, setMode] = useState<Mode>('voice');
 
   return (
@@ -77,12 +78,14 @@ export function LogScreen({ sessions, syncConfigured, onSave }: LogScreenProps) 
         <VoiceLogScreen
           sessions={sessions}
           syncConfigured={syncConfigured}
+          seedActive={seedActive}
           onSave={onSave}
         />
       ) : (
         <ManualLogScreen
           sessions={sessions}
           syncConfigured={syncConfigured}
+          seedActive={seedActive}
           onSave={onSave}
         />
       )}

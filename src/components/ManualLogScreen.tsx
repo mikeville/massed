@@ -11,18 +11,21 @@ import { EditLedger } from './EditLedger';
 export interface ManualLogScreenProps {
   sessions: Session[];
   syncConfigured: boolean;
+  seedActive: boolean;
   onSave: (date: string, exerciseName: string, family: Family, set: SetEntry) => void;
 }
 
 export function ManualLogScreen({
   sessions,
   syncConfigured,
+  seedActive,
   onSave,
 }: ManualLogScreenProps) {
   return (
     <EditLedger
       sessions={sessions}
       syncConfigured={syncConfigured}
+      seedActive={seedActive}
       onSave={onSave}
     />
   );
