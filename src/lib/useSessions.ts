@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ExerciseEntry, Family, Session, SetEntry } from './types';
 import { SEED_SESSIONS } from '../data/seed';
+import { fetchRemoteSeed } from '../data/remoteSeed';
 
 const STORAGE_KEY = 'massed:sessions:v2';
 /* Set to '1' on the cold load that fell back to SEED_SESSIONS, cleared
@@ -15,6 +16,15 @@ const SEED_FLAG_KEY = 'massed:seed-active:v1';
  * On first mount, hydrates from localStorage. If nothing is stored, falls
  * back to SEED_SESSIONS so the app has something to show. Every write
  * overwrites the entire list (small data, simple semantics for v1).
+ *
+ * On a truly cold first paint (no localStorage yet), the hook also
+ * kicks off a background `fetchRemoteSeed()` and, on success, replaces
+ * the bundled snapshot with the live gist contents. That keeps the
+ * deployed demo in step with Mike's personal sync without re-shipping
+ * the bundle. Limited to cold mount specifically so that a later
+ * `resetToSeed` (on a device with sync configured) doesn't race the
+ * gist push and clobber the new bundled snapshot. Failures are silent
+ * — the bundled fallback is always good enough.
  *
  * NOTE: when the user's session list grows beyond a few hundred entries,
  * this should switch to a more granular API (append-only writes, etc.)
@@ -77,6 +87,37 @@ export function useSessions(): {
       /* storage may be full or unavailable */
     }
   }, [sessions]);
+
+  /* Background remote-seed fetch: only on a truly cold first paint
+     (no localStorage yet), replace the bundled snapshot with the
+     canonical demo from Mike's public gist. Captured-at-render ref
+     keeps `resetToSeed` from re-triggering — if a user with sync
+     configured deliberately resets, we'd otherwise race their push
+     and ship stale gist data right back up to the gist. */
+  const coldEmptyAtMountRef = useRef<boolean | null>(null);
+  if (coldEmptyAtMountRef.current === null) {
+    try {
+      coldEmptyAtMountRef.current = localStorage.getItem(STORAGE_KEY) === null;
+    } catch {
+      coldEmptyAtMountRef.current = false;
+    }
+  }
+  const remoteFetchedRef = useRef(false);
+  useEffect(() => {
+    if (!coldEmptyAtMountRef.current) return;
+    if (remoteFetchedRef.current) return;
+    remoteFetchedRef.current = true;
+    let cancelled = false;
+    void fetchRemoteSeed().then((remote) => {
+      if (cancelled || !remote) return;
+      /* Direct state setter — not the public setSessions, which would
+         consume the seed flag. Remote-loaded demo data is still demo. */
+      setSessionsState(remote);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /**
    * Append a single set. Finds-or-creates the session for `date`, then
