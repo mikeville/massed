@@ -14,3 +14,6 @@ vite.config.d.ts
 # pipeline reports — internal only, do not publish
 FORK_REPORT.md
 SANITIZATION_REPORT.md
+
+# local tooling lock files rewritten every session
+.claude/*.lock
