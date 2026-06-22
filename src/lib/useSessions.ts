@@ -88,23 +88,20 @@ export function useSessions(): {
     }
   }, [sessions]);
 
-  /* Background remote-seed fetch: only on a truly cold first paint
-     (no localStorage yet), replace the bundled snapshot with the
-     canonical demo from Mike's public gist. Captured-at-render ref
-     keeps `resetToSeed` from re-triggering — if a user with sync
-     configured deliberately resets, we'd otherwise race their push
-     and ship stale gist data right back up to the gist. */
-  const coldEmptyAtMountRef = useRef<boolean | null>(null);
-  if (coldEmptyAtMountRef.current === null) {
-    try {
-      coldEmptyAtMountRef.current = localStorage.getItem(STORAGE_KEY) === null;
-    } catch {
-      coldEmptyAtMountRef.current = false;
-    }
+  /* Background remote-seed fetch: whenever the visible log is still
+     untouched demo data, replace the bundled (or previously-cached)
+     snapshot with the canonical demo from Mike's public gist. Gated on
+     a captured-at-mount snapshot of `seedActive` so a user with sync
+     configured who deliberately `resetToSeed`s mid-session doesn't
+     race their push and ship stale gist data right back up. Real users
+     (seed already consumed) are never touched. */
+  const seedActiveAtMountRef = useRef<boolean | null>(null);
+  if (seedActiveAtMountRef.current === null) {
+    seedActiveAtMountRef.current = seedActive;
   }
   const remoteFetchedRef = useRef(false);
   useEffect(() => {
-    if (!coldEmptyAtMountRef.current) return;
+    if (!seedActiveAtMountRef.current) return;
     if (remoteFetchedRef.current) return;
     remoteFetchedRef.current = true;
     let cancelled = false;
